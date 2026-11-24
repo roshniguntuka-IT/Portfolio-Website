@@ -1,20 +1,25 @@
 
+// =====================================
+// SMOOTH SCROLLING
+// =====================================
+
 document.querySelectorAll('a[href^="#"]').forEach(link => {
 
-    link.addEventListener("click", function(e){
+    link.addEventListener("click", function (e) {
 
-        e.preventDefault();
+        const href = this.getAttribute("href");
 
-        const target = document.querySelector(this.getAttribute("href"));
+        if (!href || href === "#") return;
 
-        if(target){
+        const target = document.querySelector(href);
+
+        if (target) {
+
+            e.preventDefault();
 
             window.scrollTo({
-
-                top: target.offsetTop - 70,
-
+                top: target.getBoundingClientRect().top + window.scrollY - 75,
                 behavior: "smooth"
-
             });
 
         }
@@ -24,18 +29,19 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 
 
-
+// =====================================
+// HEADER SHADOW ON SCROLL
+// =====================================
 
 const header = document.querySelector("header");
 
 window.addEventListener("scroll", () => {
 
-    if(window.scrollY > 50){
+    if (window.scrollY > 50) {
 
         header.style.boxShadow = "0 5px 20px rgba(0,0,0,0.3)";
 
-    }
-    else{
+    } else {
 
         header.style.boxShadow = "none";
 
@@ -44,21 +50,22 @@ window.addEventListener("scroll", () => {
 });
 
 
+// =====================================
+// ACTIVE NAVBAR LINK
+// =====================================
 
-
-
-const sections = document.querySelectorAll("section");
+const sections = document.querySelectorAll("main section[id]");
 const navLinks = document.querySelectorAll(".nav-links a");
 
-window.addEventListener("scroll", () => {
+function updateActiveLink() {
 
     let current = "";
 
     sections.forEach(section => {
 
-        const sectionTop = section.offsetTop - 120;
+        const sectionTop = section.offsetTop - 130;
 
-        if(window.scrollY >= sectionTop){
+        if (window.scrollY >= sectionTop) {
 
             current = section.getAttribute("id");
 
@@ -70,7 +77,7 @@ window.addEventListener("scroll", () => {
 
         link.classList.remove("active");
 
-        if(link.getAttribute("href") === "#" + current){
+        if (link.getAttribute("href") === "#" + current) {
 
             link.classList.add("active");
 
@@ -78,4 +85,55 @@ window.addEventListener("scroll", () => {
 
     });
 
+}
+
+window.addEventListener("scroll", updateActiveLink);
+
+window.addEventListener("load", updateActiveLink);
+
+
+// =====================================
+// MOBILE NAVIGATION MENU
+// =====================================
+
+const menuToggle = document.querySelector(".menu-toggle");
+const navMenu = document.querySelector(".nav-links");
+
+menuToggle.addEventListener("click", () => {
+
+    navMenu.classList.toggle("show");
+
+    const isOpen = navMenu.classList.contains("show");
+
+    menuToggle.setAttribute("aria-expanded", isOpen);
+
+    menuToggle.innerHTML = isOpen
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+
 });
+
+
+// Close mobile menu after clicking a navigation link
+
+navLinks.forEach(link => {
+
+    link.addEventListener("click", () => {
+
+        navMenu.classList.remove("show");
+
+        menuToggle.setAttribute("aria-expanded", "false");
+
+        menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+
+    });
+
+});
+
+
+// =====================================
+// AUTOMATIC FOOTER YEAR
+// =====================================
+
+document.getElementById("current-year").textContent =
+    new Date().getFullYear();
